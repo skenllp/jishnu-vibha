@@ -343,53 +343,150 @@ button{font-family:'Poppins',sans-serif;cursor:pointer;border:none;background:no
 .tl-title{font-size:24px;color:var(--olive-dark);margin:6px 0;}
 .tl-text{font-size:14px;color:var(--ink-soft);line-height:1.7;}
 
-/* ===================== GALLERY ===================== */
-#gallery{background:linear-gradient(180deg, var(--cream-2), var(--ivory));}
-.masonry{
-  display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;
-  width:100%;max-width:920px;margin-top:34px;
+/* ===================== GALLERY — scattered photo wall ===================== */
+#gallery{background:linear-gradient(180deg, var(--cream-2), var(--ivory));overflow:hidden;}
+.gallery-rays{
+  position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.55;
+  background:
+    radial-gradient(42% 28% at 18% 22%, rgba(233,214,166,.22), transparent 70%),
+    radial-gradient(36% 24% at 82% 38%, rgba(184,147,74,.14), transparent 72%),
+    radial-gradient(50% 30% at 50% 88%, rgba(255,253,248,.35), transparent 70%);
 }
-.tile{
-  border-radius:18px;overflow:hidden;
-  background:linear-gradient(150deg, var(--cream), var(--warm-white));
-  border:1px solid var(--glass-border);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:34px 14px;gap:10px;color:var(--ink-soft);
-  transition:transform .4s ease, box-shadow .4s ease;
-  aspect-ratio:4/5;
+.photo-wall-stage{
+  position:relative;width:100%;max-width:min(1180px,100%);margin:34px auto 0;
 }
-.tile:hover{transform:translateY(-6px);box-shadow:var(--shadow);}
-.tile svg{width:26px;height:26px;stroke:var(--champagne-2);}
-.tile span{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;}
-.photo-tile{
-  padding:0;cursor:pointer;position:relative;background:#000;
-  aspect-ratio:4/5;
-  box-shadow:0 14px 30px rgba(90,70,30,0.18);
-  border:1px solid rgba(255,255,255,0.5);
-  transition:transform .45s ease, box-shadow .45s ease;
+.photo-wall__fx{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;}
+.photo-wall{
+  position:relative;columns:3;column-gap:clamp(18px,2.8vw,34px);
+  padding:clamp(8px,2vw,20px) 0 clamp(20px,4vw,48px);z-index:2;
 }
-.photo-tile:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(90,70,30,0.3), 0 0 0 1px rgba(201,165,92,0.4);}
-.photo-tile img{
-  width:100%;height:100%;display:block;object-fit:contain;object-position:center;
-  transition:transform .7s ease;
+.photo-card{
+  --rot:0deg;--nudge-x:0px;--nudge-y:0px;--scale:1;--parallax-y:0px;
+  --enter-x:0px;--enter-y:28px;--enter-s:.96;--drift-delay:0s;
+  position:relative;display:inline-block;width:100%;
+  margin:0 0 clamp(22px,3.2vw,42px);break-inside:avoid;page-break-inside:avoid;
+  vertical-align:top;opacity:0;cursor:pointer;
+  transform:translate3d(0, var(--parallax-y), 0);
+  will-change:transform,opacity;z-index:2;
 }
-.photo-tile:hover img{transform:scale(1.04);}
-.photo-tile::after{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(180deg, transparent 55%, rgba(20,14,8,0.5));
-  opacity:0;transition:opacity .4s ease;
+.photo-card--sm{width:86%;margin-inline:auto;}
+.photo-card--md{width:96%;margin-inline:auto;}
+.photo-card--lg{width:100%;}
+.photo-card[data-enter="left"]{--enter-x:-56px;--enter-y:18px;--enter-s:1;}
+.photo-card[data-enter="right"]{--enter-x:56px;--enter-y:18px;--enter-s:1;}
+.photo-card[data-enter="up"]{--enter-x:0px;--enter-y:40px;--enter-s:.93;}
+.photo-card__inner{
+  transform:translate3d(var(--enter-x), var(--enter-y), 0) scale(var(--enter-s));
+  transition:transform 1.15s cubic-bezier(.22,.61,.36,1), opacity 1.15s cubic-bezier(.22,.61,.36,1);
+  transform-origin:center center;
 }
-.photo-tile:hover::after{opacity:1;}
-.photo-tile::before{
-  content:'⤢';position:absolute;bottom:12px;right:12px;z-index:1;
-  width:30px;height:30px;border-radius:50%;
-  background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.5);
-  color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;
-  opacity:0;transform:translateY(6px);transition:all .35s ease;
+.photo-card.is-in{opacity:1;}
+.photo-card.is-in .photo-card__inner{
+  transform:translate3d(var(--nudge-x), var(--nudge-y), 0) rotate(var(--rot)) scale(var(--scale));
+  animation:photoDrift 8.5s ease-in-out infinite alternate;
+  animation-delay:calc(1.2s + var(--drift-delay));
 }
-.photo-tile:hover::before{opacity:1;transform:translateY(0);}
-@media(max-width:640px){
-  .masonry{grid-template-columns:repeat(2, 1fr);gap:10px;}
+.photo-card__paper{
+  position:relative;padding:clamp(8px,1.2vw,12px);border-radius:10px;
+  background:linear-gradient(165deg, rgba(255,253,248,.98), rgba(244,235,218,.96) 55%, rgba(239,227,203,.94));
+  border:1px solid rgba(201,165,92,.55);
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 10px 28px -16px rgba(58,47,34,.28), 0 2px 8px rgba(58,47,34,.06);
+  transition:transform .55s cubic-bezier(.22,.61,.36,1), box-shadow .55s cubic-bezier(.22,.61,.36,1), filter .55s cubic-bezier(.22,.61,.36,1);
+  transform:translateZ(0);
+}
+.photo-card__paper::before{
+  content:"";position:absolute;inset:5px;border-radius:7px;
+  border:1px solid rgba(184,147,74,.28);pointer-events:none;z-index:2;
+}
+.photo-card__paper::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;
+  background:linear-gradient(135deg, rgba(255,255,255,.28), transparent 42%, rgba(184,147,74,.06));
+  mix-blend-mode:soft-light;
+}
+.photo-card__paper img{
+  position:relative;z-index:1;width:100%;height:auto;max-width:100%;display:block;
+  object-fit:contain;object-position:center;border-radius:4px;background:rgba(230,215,190,.35);
+}
+@media (hover:hover) and (pointer:fine){
+  .photo-card:hover{z-index:5;}
+  .photo-card.is-in:hover .photo-card__paper{
+    transform:translateY(-10px) scale(1.025) rotate(.6deg);
+    box-shadow:0 1px 0 rgba(255,255,255,.75) inset, 0 28px 54px -22px rgba(58,47,34,.42), 0 10px 22px rgba(184,147,74,.12);
+    filter:saturate(1.04);
+  }
+  .photo-card.is-in:focus-within .photo-card__paper{outline:2px solid rgba(184,147,74,.55);outline-offset:4px;}
+}
+.photo-card.is-touched .photo-card__paper{
+  animation:photoTouch .55s cubic-bezier(.22,.61,.36,1);
+  box-shadow:0 1px 0 rgba(255,255,255,.75) inset, 0 18px 40px -18px rgba(58,47,34,.36), 0 0 0 1px rgba(201,165,92,.45), 0 0 28px rgba(201,165,92,.28);
+}
+@keyframes photoDrift{
+  0%{transform:translate3d(var(--nudge-x), var(--nudge-y), 0) rotate(var(--rot)) scale(var(--scale));}
+  50%{transform:translate3d(calc(var(--nudge-x) + 2px), calc(var(--nudge-y) - 5px), 0) rotate(calc(var(--rot) + .35deg)) scale(calc(var(--scale) * 1.008));}
+  100%{transform:translate3d(calc(var(--nudge-x) - 1px), calc(var(--nudge-y) + 3px), 0) rotate(calc(var(--rot) - .25deg)) scale(var(--scale));}
+}
+@keyframes photoTouch{
+  0%{transform:translateY(0) scale(1);}
+  40%{transform:translateY(-6px) scale(1.03);}
+  100%{transform:translateY(0) scale(1);}
+}
+/* decorative sparkles / petals / dots */
+.photo-decor{position:absolute;pointer-events:none;z-index:1;opacity:.55;}
+.photo-decor--spark{
+  width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle, rgba(233,214,166,.95) 0%, rgba(184,147,74,.2) 55%, transparent 70%);
+  animation:photoSpark 4.8s ease-in-out infinite;
+}
+.photo-decor--spark::before,.photo-decor--spark::after{
+  content:"";position:absolute;left:50%;top:50%;width:1px;height:12px;
+  background:linear-gradient(180deg, transparent, rgba(233,214,166,.75), transparent);
+  transform:translate(-50%,-50%);
+}
+.photo-decor--spark::after{transform:translate(-50%,-50%) rotate(90deg);}
+.photo-decor--petal{
+  width:14px;height:10px;border-radius:60% 40% 60% 40%;
+  background:linear-gradient(135deg, rgba(233,214,166,.55), rgba(184,147,74,.15));
+  transform:rotate(25deg);animation:photoPetal 11s ease-in-out infinite alternate;
+}
+.photo-decor--dot{
+  width:3px;height:3px;border-radius:50%;background:rgba(184,147,74,.55);
+  box-shadow:0 0 8px rgba(233,214,166,.45);animation:photoSpark 6s ease-in-out infinite;
+}
+.photo-decor--ray{
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle, rgba(255,253,248,.45), transparent 68%);
+  filter:blur(2px);animation:photoSpark 9s ease-in-out infinite;
+}
+.photo-decor.a{top:8%;left:6%;animation-delay:0s;}
+.photo-decor.b{top:42%;right:4%;animation-delay:1.2s;}
+.photo-decor.d{top:28%;left:38%;opacity:.35;}
+.photo-decor.f{top:16%;right:28%;}
+.photo-decor.h{top:55%;left:8%;opacity:.4;}
+@keyframes photoSpark{0%,100%{opacity:.25;transform:scale(.85);}50%{opacity:.7;transform:scale(1.15);}}
+@keyframes photoPetal{0%{transform:translateY(0) rotate(18deg);}100%{transform:translateY(10px) rotate(42deg);}}
+@media (max-width:900px){
+  .photo-wall{columns:2;column-gap:clamp(14px,3vw,22px);}
+  .photo-card--sm{width:90%;}
+  .photo-card--md{width:98%;}
+}
+@media (max-width:640px){
+  .photo-card{margin-bottom:clamp(18px,4vw,28px);}
+  .photo-card[data-enter="left"],.photo-card[data-enter="right"]{--enter-x:0px;--enter-y:32px;--enter-s:.96;}
+}
+@media (max-width:520px){
+  .photo-wall{columns:1;}
+  .photo-wall-stage{max-width:420px;}
+  .photo-card--sm,.photo-card--md,.photo-card--lg{width:100%;}
+  .photo-card{--nudge-y:0px;--scale:1;}
+  .photo-decor{opacity:.35;}
+}
+@media (prefers-reduced-motion:reduce){
+  .photo-card,.photo-card.is-in{opacity:1;transform:none;}
+  .photo-card__inner,.photo-card.is-in .photo-card__inner{
+    transform:translate3d(var(--nudge-x,0), var(--nudge-y,0), 0) rotate(var(--rot,0deg)) scale(var(--scale,1));
+    animation:none !important;
+  }
+  .photo-card.is-touched .photo-card__paper,.photo-decor{animation:none !important;}
 }
 
 #lightbox{
@@ -716,21 +813,85 @@ button{font-family:'Poppins',sans-serif;cursor:pointer;border:none;background:no
   </section>
 
   <!-- GALLERY -->
-  <section id="gallery" class="section">
-    <div class="eyebrow">Moments</div>
-    <h2 style="font-size:clamp(30px,4.5vw,48px);color:var(--olive-dark);">Photo Gallery</h2>
-    <p style="max-width:480px;color:var(--ink-soft);font-size:14px;margin-top:10px;">A few of our favourite moments together.</p>
-    <div class="masonry" id="masonry-gallery">
-      <div class="tile photo-tile" onclick="openLightbox(0)"><img src="gallery/gallery-01.jpg" alt="Vibha and Jishnu walking hand in hand in the desert" loading="lazy"></div>
-      <div class="tile photo-tile" onclick="openLightbox(1)"><img src="gallery/gallery-02.jpg" alt="Vibha and Jishnu laughing together on the couch" loading="lazy"></div>
-      <div class="tile photo-tile" onclick="openLightbox(2)"><img src="gallery/gallery-03.jpg" alt="Vibha and Jishnu walking on the beach at sunset" loading="lazy"></div>
-      <div class="tile photo-tile" onclick="openLightbox(3)"><img src="gallery/gallery-04.jpg" alt="Close up portrait of Vibha and Jishnu" loading="lazy"></div>
-      <div class="tile photo-tile" onclick="openLightbox(4)"><img src="gallery/gallery-05.jpg" alt="Vibha and Jishnu by the campfire" loading="lazy"></div>
-      <div class="tile photo-tile" onclick="openLightbox(5)"><img src="gallery/gallery-06.jpg" alt="Vibha smiling by the truck" loading="lazy"></div>
-      <div class="tile photo-tile" onclick="openLightbox(6)"><img src="gallery/gallery-07.jpg" alt="Vibha and Jishnu sitting together on a sand dune" loading="lazy"></div>
-      <div class="tile photo-tile" onclick="openLightbox(7)"><img src="gallery/gallery-08.jpg" alt="Vibha and Jishnu walking on the beach, seen through a car window" loading="lazy"></div>
-      <div class="tile photo-tile" onclick="openLightbox(8)"><img src="gallery/gallery-09.jpg" alt="Vibha and Jishnu sharing coffee on a balcony overlooking the city" loading="lazy"></div>
-      <div class="tile photo-tile" onclick="openLightbox(9)"><img src="gallery/gallery-10.jpg" alt="Vibha and Jishnu by the campfire at night" loading="lazy"></div>
+  <section id="gallery" class="section" style="min-height:auto;padding-bottom:110px;">
+    <div class="gallery-rays" aria-hidden="true"></div>
+    <div class="bg-content" style="position:relative;z-index:2;width:100%;">
+      <div class="eyebrow">Moments</div>
+      <h2 style="font-size:clamp(30px,4.5vw,48px);color:var(--olive-dark);">Photo Gallery</h2>
+      <div class="divider"></div>
+      <p style="max-width:480px;margin-inline:auto;color:var(--ink-soft);font-size:14px;margin-top:-10px;">A few cherished frames from our journey together.</p>
+
+      <div class="photo-wall-stage">
+        <div class="photo-wall__fx" aria-hidden="true">
+          <span class="photo-decor photo-decor--spark a"></span>
+          <span class="photo-decor photo-decor--spark b"></span>
+          <span class="photo-decor photo-decor--petal d"></span>
+          <span class="photo-decor photo-decor--dot f"></span>
+          <span class="photo-decor photo-decor--ray h"></span>
+        </div>
+
+        <div class="photo-wall" id="photoWall" aria-label="Wedding photographs">
+          <figure class="photo-card photo-card--lg photo-tile" data-enter="left" data-speed="0.05" style="--rot:-3.2deg;--nudge-y:14px;--drift-delay:0s;" onclick="openLightbox(0)">
+            <div class="photo-card__inner"><div class="photo-card__paper">
+              <img loading="lazy" decoding="async" src="gallery/gallery-01.jpg" alt="Vibha and Jishnu walking hand in hand in the desert">
+            </div></div>
+          </figure>
+
+          <figure class="photo-card photo-card--md photo-tile" data-enter="right" data-speed="-0.06" style="--rot:2.4deg;--nudge-y:-8px;--drift-delay:.5s;" onclick="openLightbox(1)">
+            <div class="photo-card__inner"><div class="photo-card__paper">
+              <img loading="lazy" decoding="async" src="gallery/gallery-02.jpg" alt="Vibha and Jishnu laughing together on the couch">
+            </div></div>
+          </figure>
+
+          <figure class="photo-card photo-card--sm photo-tile" data-enter="up" data-speed="0.04" style="--rot:-1.8deg;--nudge-y:10px;--drift-delay:1s;" onclick="openLightbox(2)">
+            <div class="photo-card__inner"><div class="photo-card__paper">
+              <img loading="lazy" decoding="async" src="gallery/gallery-03.jpg" alt="Vibha and Jishnu walking on the beach at sunset">
+            </div></div>
+          </figure>
+
+          <figure class="photo-card photo-card--lg photo-tile" data-enter="right" data-speed="-0.05" style="--rot:3.1deg;--nudge-y:-12px;--drift-delay:1.5s;" onclick="openLightbox(3)">
+            <div class="photo-card__inner"><div class="photo-card__paper">
+              <img loading="lazy" decoding="async" src="gallery/gallery-04.jpg" alt="Close up portrait of Vibha and Jishnu">
+            </div></div>
+          </figure>
+
+          <figure class="photo-card photo-card--md photo-tile" data-enter="left" data-speed="0.06" style="--rot:-2.6deg;--nudge-y:8px;--drift-delay:2s;" onclick="openLightbox(4)">
+            <div class="photo-card__inner"><div class="photo-card__paper">
+              <img loading="lazy" decoding="async" src="gallery/gallery-05.jpg" alt="Vibha and Jishnu by the campfire">
+            </div></div>
+          </figure>
+
+          <figure class="photo-card photo-card--sm photo-tile" data-enter="up" data-speed="-0.04" style="--rot:2.2deg;--nudge-y:-6px;--drift-delay:.3s;" onclick="openLightbox(5)">
+            <div class="photo-card__inner"><div class="photo-card__paper">
+              <img loading="lazy" decoding="async" src="gallery/gallery-06.jpg" alt="Vibha smiling by the truck">
+            </div></div>
+          </figure>
+
+          <figure class="photo-card photo-card--lg photo-tile" data-enter="left" data-speed="0.05" style="--rot:-3.6deg;--nudge-y:12px;--drift-delay:.8s;" onclick="openLightbox(6)">
+            <div class="photo-card__inner"><div class="photo-card__paper">
+              <img loading="lazy" decoding="async" src="gallery/gallery-07.jpg" alt="Vibha and Jishnu sitting together on a sand dune">
+            </div></div>
+          </figure>
+
+          <figure class="photo-card photo-card--md photo-tile" data-enter="right" data-speed="-0.05" style="--rot:1.9deg;--nudge-y:-10px;--drift-delay:1.8s;" onclick="openLightbox(7)">
+            <div class="photo-card__inner"><div class="photo-card__paper">
+              <img loading="lazy" decoding="async" src="gallery/gallery-08.jpg" alt="Vibha and Jishnu walking on the beach, seen through a car window">
+            </div></div>
+          </figure>
+
+          <figure class="photo-card photo-card--sm photo-tile" data-enter="up" data-speed="0.04" style="--rot:-2.4deg;--nudge-y:8px;--drift-delay:1.2s;" onclick="openLightbox(8)">
+            <div class="photo-card__inner"><div class="photo-card__paper">
+              <img loading="lazy" decoding="async" src="gallery/gallery-09.jpg" alt="Vibha and Jishnu sharing coffee on a balcony overlooking the city">
+            </div></div>
+          </figure>
+
+          <figure class="photo-card photo-card--lg photo-tile" data-enter="left" data-speed="-0.05" style="--rot:3.3deg;--nudge-y:-14px;--drift-delay:2.2s;" onclick="openLightbox(9)">
+            <div class="photo-card__inner"><div class="photo-card__paper">
+              <img loading="lazy" decoding="async" src="gallery/gallery-10.jpg" alt="Vibha and Jishnu by the campfire at night">
+            </div></div>
+          </figure>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1010,11 +1171,6 @@ function initScrollAnimations(){
     });
   });
 
-  gsap.from('.tile', {
-    opacity:0, y:40, duration:0.8, stagger:0.08, ease:'power2.out',
-    scrollTrigger:{trigger:'.masonry', start:'top 85%'}
-  });
-
   gsap.from('.venue-row', {
     opacity:0, y:30, duration:0.9, stagger:0.15, ease:'power2.out',
     scrollTrigger:{trigger:'.location-card', start:'top 82%'}
@@ -1027,6 +1183,70 @@ function initScrollAnimations(){
 
   ScrollTrigger.refresh();
 }
+
+/* ================= GALLERY PHOTO WALL — enter / drift / parallax / touch ================= */
+function initGalleryWall(){
+  const wall = document.getElementById('photoWall');
+  if(!wall) return;
+  const cards = wall.querySelectorAll('.photo-card');
+  if(!cards.length) return;
+
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function revealCard(card){
+    if(card.classList.contains('is-in')) return;
+    card.classList.add('is-in');
+  }
+
+  if(reduceMotion || !('IntersectionObserver' in window)){
+    cards.forEach(revealCard);
+  } else {
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach((en)=>{
+        if(!en.isIntersecting) return;
+        revealCard(en.target);
+        io.unobserve(en.target);
+      });
+    }, { threshold:0.14, rootMargin:'0px 0px -6% 0px' });
+    cards.forEach((card)=> io.observe(card));
+  }
+
+  /* touch bounce */
+  cards.forEach((card)=>{
+    const clearTouch = ()=> card.classList.remove('is-touched');
+    card.addEventListener('pointerdown', (e)=>{
+      if(e.pointerType === 'mouse') return;
+      card.classList.add('is-touched');
+      setTimeout(clearTouch, 560);
+    }, { passive:true });
+  });
+
+  if(reduceMotion) return;
+
+  /* subtle scroll parallax, driven by gsap's ticker so it stays in sync with Lenis */
+  const speeds = [];
+  cards.forEach((card, i)=>{
+    const raw = parseFloat(card.getAttribute('data-speed'));
+    speeds[i] = isNaN(raw) ? ((i % 2 === 0) ? 0.05 : -0.04) : raw;
+  });
+
+  function updateParallax(){
+    const vh = window.innerHeight || 1;
+    const mid = vh * 0.5;
+    for(let i=0;i<cards.length;i++){
+      const card = cards[i];
+      if(!card.classList.contains('is-in')) continue;
+      const rect = card.getBoundingClientRect();
+      if(rect.bottom < -80 || rect.top > vh + 80) continue;
+      let offset = (rect.top + rect.height * 0.5 - mid) * speeds[i];
+      if(offset > 18) offset = 18;
+      if(offset < -18) offset = -18;
+      card.style.setProperty('--parallax-y', offset.toFixed(2) + 'px');
+    }
+  }
+  gsap.ticker.add(updateParallax);
+}
+initGalleryWall();
 
 /* ================= SCRATCH CARD + GOLDEN BURST ================= */
 const canvas = document.getElementById('scratch-canvas');
