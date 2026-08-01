@@ -10,7 +10,7 @@
  */
 
 const SHEET_NAME = "RSVP Responses";
-const NOTIFY_EMAIL = "sahilmuhd123@gmail.com";
+const NOTIFY_EMAIL = "jishnumud@gmail.com";
 
 function doPost(e) {
   try {

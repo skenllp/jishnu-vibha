@@ -2,7 +2,7 @@
 
 This makes every RSVP submission on your site:
 1. Get saved as a new row in a Google Sheet
-2. Trigger an email notification to **sahilmuhd123@gmail.com**
+2. Trigger an email notification to **jishnumud@gmail.com**
 
 It's free and uses only your own Google account — no third-party service.
 
@@ -42,7 +42,7 @@ It's free and uses only your own Google account — no third-party service.
 ## Step 5 — Test it
 1. Open your live site, fill out the RSVP form, and submit.
 2. Check the Google Sheet — a new row (Timestamp, Name, Phone, Guests, Attending, Message) should appear within a few seconds.
-3. Check sahilmuhd123@gmail.com — you should receive an email notification with the same details.
+3. Check jishnumud@gmail.com — you should receive an email notification with the same details.
 
 ## Notes
 - If you ever update the script code later, you must create a **new deployment version** (Deploy → Manage deployments → edit → New version) for changes to take effect — just saving the file isn't enough.
