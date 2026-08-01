@@ -808,13 +808,14 @@
       margin-bottom: 14px;
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 8px 16px;
     }
 
     .event-meta span {
       display: flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
 
     .event-venue {
@@ -1828,6 +1829,25 @@
         height: min(460px, 70vw);
         flex: none;
       }
+
+      .event-body {
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .event-meta {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .event-meta span {
+        white-space: normal;
+      }
+
+      .event-title {
+        font-size: 26px;
+      }
     }
 
     @media(max-width:640px) {
@@ -1892,6 +1912,15 @@
       #chapter-sangeeth .event-video-wrap {
         width: min(240px, 82vw);
         height: min(420px, 72vw);
+      }
+
+      .event-body {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .event-meta {
+        font-size: 13px;
       }
 
       .location-card,
