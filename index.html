@@ -1820,11 +1820,13 @@
       .event-chapter,
       .event-chapter.reverse {
         flex-direction: column;
+        align-items: center;
       }
 
       .event-video-wrap {
-        width: 200px;
-        height: 355px;
+        width: min(260px, 80vw);
+        height: min(460px, 70vw);
+        flex: none;
       }
     }
 
@@ -1881,8 +1883,15 @@
       }
 
       .event-video-wrap {
-        width: 170px;
-        height: 300px;
+        width: min(220px, 75vw);
+        height: min(390px, 64vw);
+        flex: none;
+      }
+
+      /* sangeeth video — full-width on small phones */
+      #chapter-sangeeth .event-video-wrap {
+        width: min(240px, 82vw);
+        height: min(420px, 72vw);
       }
 
       .location-card,
@@ -2130,7 +2139,7 @@
           <div class="tl-year">The Beginning</div>
           <h3 class="tl-title serif">Two Paths Meet</h3>
           <p class="tl-text">What started as a simple introduction soon turned into conversations that naturally
-            stretched for hours. From the very beginning, there was an effortless comfort between us —a quiet,
+            stretched for hours. From the very beginning, there was an effortless comfort between us,a quiet,
             undeniable feeling that our paths were always meant to cross.</p>
         </div>
         <div class="tl-item">
@@ -2146,7 +2155,7 @@
           <div class="tl-year">The Proposal</div>
           <h3 class="tl-title serif">Forever, Please</h3>
           <p class="tl-text">Surrounded by a love built on trust and time, the question was finally asked. It was
-            simple, sweet, and sincere-the easiest "Yes" ever spoken, setting the stage for everything yet to come.</p>
+            simple, sweet, and sincere the easiest "Yes" ever spoken, setting the stage for everything yet to come.</p>
         </div>
         <div class="tl-item">
           <div class="tl-dot"></div>
@@ -2890,7 +2899,12 @@ END:VCALENDAR`;
     /* ================= EVENT VIDEOS: AUTOPLAY IN VIEW, PAUSE OUT, FULLSCREEN ON CLICK ================= */
     const eventVideos = document.querySelectorAll('.event-video');
 
-    /* Step 1 — Lazy-load: only fetch video data when near viewport */
+    /* Step 1 — Lazy-load: only fetch when near viewport.
+       Use tighter margin on slow/mobile connections to avoid loading all big files at once. */
+    const isMobileConn = navigator.connection &&
+      (navigator.connection.saveData || /2g|slow-2g/.test(navigator.connection.effectiveType));
+    const loadMargin = isMobileConn ? '100px' : (isMobile ? '200px' : '400px');
+
     const videoLoadObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -2900,18 +2914,25 @@ END:VCALENDAR`;
             v.src = src;
             v.removeAttribute('data-src');
             v.load();
+            /* Once loaded enough, re-trigger play observer by firing a synthetic check */
+            v.addEventListener('canplay', () => {
+              const rect = v.getBoundingClientRect();
+              const ratio = Math.max(0, Math.min(1,
+                (Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0)) / rect.height
+              ));
+              if (ratio >= 0.4 && v.paused) v.play().catch(() => {});
+            }, { once: true });
           }
           videoLoadObserver.unobserve(v);
         }
       });
-    }, { rootMargin: '400px' });
+    }, { rootMargin: loadMargin });
 
     /* Step 2 — Play/Pause when 40% visible */
     const videoPlayObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         const v = entry.target;
-        /* skip if not yet loaded */
-        if (!v.src) return;
+        if (!v.src) return; /* not loaded yet — canplay handler above will pick it up */
         const shouldPlay = entry.isIntersecting && entry.intersectionRatio >= 0.4;
         if (shouldPlay && v.paused) {
           eventVideos.forEach(other => { if (other !== v && !other.paused) other.pause(); });
@@ -2931,6 +2952,21 @@ END:VCALENDAR`;
 
     function goFullscreen(wrap) {
       const video = wrap.querySelector('video');
+      /* If video hasn't loaded yet (lazy), load it first then fullscreen */
+      if (!video.src && video.getAttribute('data-src')) {
+        video.src = video.getAttribute('data-src');
+        video.removeAttribute('data-src');
+        video.load();
+        video.addEventListener('canplay', () => {
+          _enterFullscreen(video);
+          video.play().catch(() => {});
+        }, { once: true });
+        return;
+      }
+      _enterFullscreen(video);
+      video.play().catch(() => {});
+    }
+    function _enterFullscreen(video) {
       if (video.requestFullscreen) video.requestFullscreen();
       else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
       else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
