@@ -2459,8 +2459,8 @@
           <div style="font-size:34px;">🌸</div>
           <p style="margin-top:8px;">Thank you! Your RSVP has been saved.</p>
         </div>
-        <p class="rsvp-note">Responses are currently saved on this device. A direct WhatsApp/phone number for
-          confirmations will be added here soon.</p>
+        <p class="rsvp-note">Your response is recorded straight away. For anything urgent, feel free to reach out
+          directly too.</p>
       </div>
     </section>
 
@@ -3002,6 +3002,9 @@ END:VCALENDAR`;
       btn.classList.add('active');
       attendValue = btn.dataset.val;
     }
+    // Paste your Google Apps Script Web App URL here (see GOOGLE_SHEET_SETUP.md for instructions)
+    const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbyNEtAgPxgnVlXjCxHsrgK1oaRPiGxJjb8QtyKB4VQWTfKZ1lUS8GDmKnraTyrhUfyx/exec";
+
     document.getElementById('rsvp-form').addEventListener('submit', function (e) {
       e.preventDefault();
       const entry = {
@@ -3012,11 +3015,44 @@ END:VCALENDAR`;
         message: document.getElementById('r-message').value,
         time: new Date().toISOString()
       };
+
+      // Local backup copy (in case of offline / network issues)
       const all = JSON.parse(localStorage.getItem('vj_rsvp_list') || '[]');
       all.push(entry);
       localStorage.setItem('vj_rsvp_list', JSON.stringify(all));
-      this.style.display = 'none';
-      document.getElementById('rsvp-success').classList.add('show');
+
+      const form = this;
+      const submitBtn = form.querySelector('.rsvp-submit');
+      const originalBtnText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+
+      const finishUp = () => {
+        form.style.display = 'none';
+        document.getElementById('rsvp-success').classList.add('show');
+      };
+
+      if (!RSVP_ENDPOINT || RSVP_ENDPOINT.indexOf('PASTE_YOUR') === 0) {
+        // Endpoint not configured yet — just save locally.
+        finishUp();
+        return;
+      }
+
+      // Apps Script web apps don't send CORS headers back on a simple fetch,
+      // so we use mode:'no-cors'. The request still reaches the script and
+      // gets processed (row added + email sent); we just can't read the response.
+      fetch(RSVP_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(entry)
+      })
+        .catch(err => console.error('RSVP submission error:', err))
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+          finishUp();
+        });
     });
 
     /* ================= MUSIC PLAYER (shared: floating + footer button) ================= */
