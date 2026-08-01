@@ -706,6 +706,12 @@
       backface-visibility: hidden;
     }
 
+    /* Sangeeth video has on-screen text — use contain so nothing gets cropped */
+    #chapter-sangeeth .event-video-wrap video {
+      object-fit: contain;
+      background: #000;
+    }
+
     .event-video-wrap .vignette {
       position: absolute;
       inset: 0;
