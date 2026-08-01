@@ -2275,6 +2275,56 @@
                 </div>
               </div>
             </figure>
+
+            <figure class="photo-card photo-card--md photo-tile" data-enter="right" data-speed="0.05"
+              style="--rot:-2.1deg;--nudge-y:10px;--drift-delay:0.6s;" onclick="openLightbox(10)">
+              <div class="photo-card__inner">
+                <div class="photo-card__paper">
+                  <img loading="lazy" decoding="async" src="gallery/WhatsApp Image 2026-08-01 at 11.13.20 AM.jpeg"
+                    alt="Vibha and Jishnu">
+                </div>
+              </div>
+            </figure>
+
+            <figure class="photo-card photo-card--sm photo-tile" data-enter="left" data-speed="-0.04"
+              style="--rot:2.7deg;--nudge-y:-8px;--drift-delay:1.1s;" onclick="openLightbox(11)">
+              <div class="photo-card__inner">
+                <div class="photo-card__paper">
+                  <img loading="lazy" decoding="async" src="gallery/WhatsApp Image 2026-08-01 at 11.13.21 AM (1).jpeg"
+                    alt="Vibha and Jishnu">
+                </div>
+              </div>
+            </figure>
+
+            <figure class="photo-card photo-card--lg photo-tile" data-enter="up" data-speed="0.06"
+              style="--rot:-3.0deg;--nudge-y:12px;--drift-delay:1.6s;" onclick="openLightbox(12)">
+              <div class="photo-card__inner">
+                <div class="photo-card__paper">
+                  <img loading="lazy" decoding="async" src="gallery/WhatsApp Image 2026-08-01 at 11.13.21 AM (2).jpeg"
+                    alt="Vibha and Jishnu">
+                </div>
+              </div>
+            </figure>
+
+            <figure class="photo-card photo-card--md photo-tile" data-enter="right" data-speed="-0.05"
+              style="--rot:1.8deg;--nudge-y:-10px;--drift-delay:2.0s;" onclick="openLightbox(13)">
+              <div class="photo-card__inner">
+                <div class="photo-card__paper">
+                  <img loading="lazy" decoding="async" src="gallery/WhatsApp Image 2026-08-01 at 11.13.21 AM (3).jpeg"
+                    alt="Vibha and Jishnu">
+                </div>
+              </div>
+            </figure>
+
+            <figure class="photo-card photo-card--sm photo-tile" data-enter="left" data-speed="0.04"
+              style="--rot:-2.5deg;--nudge-y:8px;--drift-delay:0.9s;" onclick="openLightbox(14)">
+              <div class="photo-card__inner">
+                <div class="photo-card__paper">
+                  <img loading="lazy" decoding="async" src="gallery/WhatsApp Image 2026-08-01 at 11.13.22 AM.jpeg"
+                    alt="Vibha and Jishnu">
+                </div>
+              </div>
+            </figure>
           </div>
         </div>
       </div>
@@ -2448,7 +2498,7 @@
       <rect x="14" y="4" width="4" height="16"></rect>
     </svg>
   </button>
-  <audio id="bg-music" loop src="music.mp3"></audio>
+  <audio id="bg-music" loop src="music.webm"></audio>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -2982,7 +3032,7 @@ END:VCALENDAR`;
           playing = true; player.classList.add('playing');
           iconPlay.style.display = 'none'; iconPause.style.display = 'block';
           if (footerMusicBtn) footerMusicBtn.textContent = '❚❚ Pause Music';
-        }).catch(() => { showToast('Add music.mp3 to this folder to enable music'); });
+        }).catch(() => { showToast('Add music.webm to this folder to enable music'); });
       } else {
         music.pause(); playing = false; player.classList.remove('playing');
         iconPlay.style.display = 'block'; iconPause.style.display = 'none';
